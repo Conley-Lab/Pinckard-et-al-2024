@@ -1,0 +1,73 @@
+//CLAHE and Subtract Background Macro
+dir=getDirectory(Choose a Directory); 
+print(dir); 
+splitDir= dir + OneChannel;
+print(splitDir); 
+File.makeDirectory(splitDir); 
+list = getFileList(dir);
+for (i=0; ilist.length; i++) { 
+     if (endsWith(list[i], .tif)){ 
+               print(i +   + dir+list[i]); 
+             open(dir+list[i]); 
+             imgName=getTitle(); 
+         baseNameEnd=indexOf(imgName, .tif); 
+         baseName=substring(imgName, 0, baseNameEnd);
+run(Enhance Local Contrast (CLAHE), blocksize=127 histogram=256 maximum=3 mask=None);
+run(Subtract Background..., rolling=50);
+      selectWindow(imgName); 
+           saveAs(Tiff,  splitDir + baseName + -clahe.tif);
+           close();
+     } else {
+     write(One Channel Conversion is Complete);
+     }”
+
+//Local Thickness Macro
+dir=getDirectory(Choose a Directory); 
+print(dir); 
+splitDir= dir + OneChannel;
+print(splitDir); 
+File.makeDirectory(splitDir); 
+list = getFileList(dir);for (i=0; ilist.length; i++) { 
+     if (endsWith(list[i], .tif)){ 
+               print(i +   + dir+list[i]); 
+             open(dir+list[i]); 
+             imgName=getTitle(); 
+         baseNameEnd=indexOf(imgName, .tif); 
+         baseName=substring(imgName, 0, baseNameEnd);
+run(Local Thickness (complete process), threshold=128);
+saveAs(Tiff,  splitDir + baseName + -vesselthickness.tif);
+run(Histogram, bins=105 x_min=0 x_max=325 y_max=Auto);
+waitForUser(Click List then click file save as then click ok);
+ selectWindow(Histogram of  + baseName + -vesselthickness); 
+           saveAs(Results, splitDir + baseName + -vessthick.csv);
+run(Close All);”
+
+//Image Skeletonization Macro
+dir=getDirectory(Choose a Directory); 
+print(dir); 
+splitDir= dir + OneChannel;
+print(splitDir); 
+File.makeDirectory(splitDir); 
+list = getFileList(dir);
+for (i=0; ilist.length; i++) { 
+     if (endsWith(list[i], .tif)){ 
+               print(i +   + dir+list[i]); 
+             open(dir+list[i]); 
+             imgName=getTitle(); 
+         baseNameEnd=indexOf(imgName, .tif); 
+         baseName=substring(imgName, 0, baseNameEnd);
+run(Convert to Mask);
+run(Skeletonize);
+run(Analyze Skeleton (2D3D), prune=none show);
+ selectWindow(Tagged skeleton); 
+           saveAs(Tiff,  splitDir + baseName + -tagskel.tif);
+           close();
+ selectWindow(Results); 
+           saveAs(Results, splitDir + baseName + -result.csv);
+           close();
+ selectWindow(Branch information); 
+           saveAs(Results, splitDir + baseName + -branch.csv);
+     } else {
+     write(One Channel Conversion is Complete);
+     }
+}”
